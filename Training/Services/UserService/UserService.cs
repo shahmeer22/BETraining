@@ -1,6 +1,7 @@
 ﻿using Training.Dtos.User;
 using Training.Data;
 using Training.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace Training.Services.UserService
 {
@@ -50,7 +51,24 @@ namespace Training.Services.UserService
 
         public async Task<ServiceResponse<string>> DeleteUser(int id)
         {
-            throw new NotImplementedException();
+            ServiceResponse<string> res = new();
+            try
+            {
+                User? user = await _context.Users.FirstOrDefaultAsync(c => c.Id == id);
+                if (user == null)
+                {
+                    throw new Exception("User does not exist");
+                }
+                _context.Users.Remove(user);
+                await _context.SaveChangesAsync();
+                res.Message = "Successfully Deleted";
+            }
+            catch (Exception ex)
+            {
+                res.Success = false;
+                res.Message = ex.Message;
+            }
+            return res;
         }
 
         public async Task<ServiceResponse<GetUserDto>> GetUserById(int id)

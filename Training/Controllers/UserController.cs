@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Training.Dtos.User;
+using Training.Models;
 using Training.Services.UserService;
 
 namespace Training.Controllers
@@ -16,7 +17,22 @@ namespace Training.Controllers
 
         [HttpPost]
         public async Task<IActionResult> AddUser(AddUserDto user) {
-            return Ok(await _userService.AddUser(user));
+            ServiceResponse <GetUserDto> res = await _userService.AddUser(user);
+            if (!res.Success) {
+                return BadRequest(res);
+            }
+            return Ok(res);
+        }
+
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeleteUser(int id)
+        {
+            ServiceResponse<string> res = await _userService.DeleteUser(id);
+            if (!res.Success)
+            {
+                return BadRequest(res);
+            }
+            return Ok(res);
         }
     }
 }
