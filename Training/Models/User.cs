@@ -1,4 +1,6 @@
-﻿namespace Training.Models
+﻿using Training.Dtos.User;
+
+namespace Training.Models
 {
     public class User
     {
