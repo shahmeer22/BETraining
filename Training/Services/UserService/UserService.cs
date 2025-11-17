@@ -14,9 +14,9 @@ namespace Training.Services.UserService
             _context = context;
         }
 
-        public async Task<ServiceResponse<GetUserDto>> AddUser(AddUserDto user)
+        public async Task<ServiceResponse> AddUser(AddUserDto user)
         {
-            ServiceResponse<GetUserDto> res = new();
+            ServiceResponse res = new();
             try
             {
                 User newUser = new User {
@@ -49,9 +49,9 @@ namespace Training.Services.UserService
             return res;
         }
 
-        public async Task<ServiceResponse<string>> DeleteUser(int id)
+        public async Task<ServiceResponse> DeleteUser(int id)
         {
-            ServiceResponse<string> res = new();
+            ServiceResponse res = new();
             try
             {
                 User? user = await _context.Users.FirstOrDefaultAsync(c => c.Id == id);
@@ -71,14 +71,64 @@ namespace Training.Services.UserService
             return res;
         }
 
-        public async Task<ServiceResponse<GetUserDto>> GetUserById(int id)
+        public async Task<ServiceResponse> UpdateUser(UpdateUserDto updatedUser)
         {
-            throw new NotImplementedException();
+            ServiceResponse res = new();
+            try
+            {
+                User? user = await _context.Users.FirstOrDefaultAsync(c => c.Id == updatedUser.Id);
+                if (user == null)
+                {
+                    throw new Exception("User does not exist");
+                }
+                user.FirstName = updatedUser.FirstName;
+                user.LastName = updatedUser.LastName;
+                user.Age = updatedUser.Age;
+                user.phoneNumber = updatedUser.phoneNumber;
+                _context.Users.Update(user);
+                await _context.SaveChangesAsync();
+                res.Data = new GetUserDto
+                {   
+                    Id = user.Id,
+                    FirstName = user.FirstName,
+                    LastName = user.LastName,
+                    Age= user.Age,
+                    phoneNumber = user.phoneNumber
+                };
+            }
+            catch (Exception ex)
+            {
+                res.Success = false;
+                res.Message = ex.Message;
+            }
+            return res;
         }
 
-        public async Task<ServiceResponse<GetUserDto>> UpdateUser(UpdateUserDto updatedUser)
+        public async Task<ServiceResponse> GetUserById(int id)
         {
-            throw new NotImplementedException();
+            ServiceResponse res = new();
+            try
+            {
+                User? user = await _context.Users.FirstOrDefaultAsync(c => c.Id == id);
+                if (user == null)
+                {
+                    throw new Exception("User does not exist");
+                }
+                res.Data = new GetUserDto
+                {
+                    Id = user.Id,
+                    FirstName = user.FirstName,
+                    LastName = user.LastName,
+                    Age = user.Age,
+                    phoneNumber = user.phoneNumber
+                };
+            }
+            catch (Exception ex)
+            {
+                res.Success = false;
+                res.Message = ex.Message;
+            }
+            return res;
         }
     }
 }

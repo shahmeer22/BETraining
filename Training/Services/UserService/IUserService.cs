@@ -5,9 +5,9 @@ namespace Training.Services.UserService
 {
     public interface IUserService
     {
-        Task<ServiceResponse<GetUserDto>> AddUser(AddUserDto user);
-        Task<ServiceResponse<string>> DeleteUser(int id);
-        Task<ServiceResponse<GetUserDto>> UpdateUser(UpdateUserDto updatedUser);
-        Task<ServiceResponse<GetUserDto>> GetUserById(int id);
+        Task<ServiceResponse> AddUser(AddUserDto user);
+        Task<ServiceResponse> DeleteUser(int id);
+        Task<ServiceResponse> UpdateUser(UpdateUserDto updatedUser);
+        Task<ServiceResponse> GetUserById(int id);
     }
 }

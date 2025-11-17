@@ -7,7 +7,7 @@ namespace Training.Controllers
 {
     [ApiController]
     [Route("[controller]")]
-    public class UserController: ControllerBase
+    public class UserController: BaseController
     {
         private readonly IUserService _userService;
         public UserController(IUserService userService)
@@ -17,8 +17,9 @@ namespace Training.Controllers
 
         [HttpPost]
         public async Task<IActionResult> AddUser(AddUserDto user) {
-            ServiceResponse <GetUserDto> res = await _userService.AddUser(user);
-            if (!res.Success) {
+            ServiceResponse res = await _userService.AddUser(user);
+            if (!res.Success) 
+            {
                 return BadRequest(res);
             }
             return Ok(res);
@@ -27,7 +28,29 @@ namespace Training.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteUser(int id)
         {
-            ServiceResponse<string> res = await _userService.DeleteUser(id);
+            ServiceResponse res = await _userService.DeleteUser(id);
+            if (!res.Success)
+            {
+                return BadRequest(res);
+            }
+            return Ok(res);
+        }
+
+        [HttpPut]
+        public async Task<IActionResult> UpdateUser(UpdateUserDto updatedUser)
+        {
+            ServiceResponse res = await _userService.UpdateUser(updatedUser);
+            if (!res.Success)
+            {
+                return BadRequest(res);
+            }
+            return Ok(res);
+        }
+
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetUserById(int id)
+        {
+            ServiceResponse res = await _userService.GetUserById(id);
             if (!res.Success)
             {
                 return BadRequest(res);
