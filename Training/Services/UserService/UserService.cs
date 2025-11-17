@@ -3,15 +3,17 @@ using Training.Data;
 using Training.Models;
 using Microsoft.EntityFrameworkCore;
 using Training.Constants;
+using AutoMapper;
 
 namespace Training.Services.UserService
 {
     public class UserService : IUserService
     {
+        private readonly IMapper _mapper;
         private readonly DataContext _context;
-
-        public UserService(DataContext context)
+        public UserService(IMapper mapper, DataContext context)
         {
+            _mapper = mapper;
             _context = context;
         }
 
@@ -20,25 +22,12 @@ namespace Training.Services.UserService
             ServiceResponse res = new();
             try
             {
-                User newUser = new User {
-                    FirstName = user.FirstName,
-                    LastName = user.LastName,
-                    Age = user.Age,
-                    phoneNumber = user.phoneNumber
-                };
+                User newUser = _mapper.Map<User>(user);
 
                 await _context.Users.AddAsync(newUser);
                 await _context.SaveChangesAsync();
 
-                res.Data = new GetUserDto
-                {
-                    Id = newUser.Id,        
-                    FirstName = newUser.FirstName,
-                    LastName = newUser.LastName,
-                    Age = newUser.Age,
-                    phoneNumber = newUser.phoneNumber
-
-                };
+                res.Data = _mapper.Map<GetUserDto>(newUser);
 
                 res.Message = ResponseMessages.USER_CREATED_SUCCESSFULLY;
             }
@@ -88,14 +77,7 @@ namespace Training.Services.UserService
                 user.phoneNumber = updatedUser.phoneNumber;
                 _context.Users.Update(user);
                 await _context.SaveChangesAsync();
-                res.Data = new GetUserDto
-                {   
-                    Id = user.Id,
-                    FirstName = user.FirstName,
-                    LastName = user.LastName,
-                    Age= user.Age,
-                    phoneNumber = user.phoneNumber
-                };
+                res.Data = _mapper.Map<GetUserDto>(user);
             }
             catch (Exception ex)
             {
@@ -115,14 +97,7 @@ namespace Training.Services.UserService
                 {
                     throw new Exception(ResponseMessages.USER_DOES_NOT_EXIST);
                 }
-                res.Data = new GetUserDto
-                {
-                    Id = user.Id,
-                    FirstName = user.FirstName,
-                    LastName = user.LastName,
-                    Age = user.Age,
-                    phoneNumber = user.phoneNumber
-                };
+                res.Data = _mapper.Map<GetUserDto>(user);
             }
             catch (Exception ex)
             {
