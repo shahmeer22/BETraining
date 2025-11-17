@@ -2,6 +2,7 @@
 using Training.Data;
 using Training.Models;
 using Microsoft.EntityFrameworkCore;
+using Training.Constants;
 
 namespace Training.Services.UserService
 {
@@ -39,7 +40,7 @@ namespace Training.Services.UserService
 
                 };
 
-                res.Message = "User created successfully.";
+                res.Message = ResponseMessages.USER_CREATED_SUCCESSFULLY;
             }
             catch (Exception ex)
             {
@@ -57,11 +58,11 @@ namespace Training.Services.UserService
                 User? user = await _context.Users.FirstOrDefaultAsync(c => c.Id == id);
                 if (user == null)
                 {
-                    throw new Exception("User does not exist");
+                    throw new Exception(ResponseMessages.USER_DOES_NOT_EXIST);
                 }
                 _context.Users.Remove(user);
                 await _context.SaveChangesAsync();
-                res.Message = "Successfully Deleted";
+                res.Message = ResponseMessages.SUCCESSFULLY_DELETED;
             }
             catch (Exception ex)
             {
@@ -79,7 +80,7 @@ namespace Training.Services.UserService
                 User? user = await _context.Users.FirstOrDefaultAsync(c => c.Id == updatedUser.Id);
                 if (user == null)
                 {
-                    throw new Exception("User does not exist");
+                    throw new Exception(ResponseMessages.USER_DOES_NOT_EXIST);
                 }
                 user.FirstName = updatedUser.FirstName;
                 user.LastName = updatedUser.LastName;
@@ -112,7 +113,7 @@ namespace Training.Services.UserService
                 User? user = await _context.Users.FirstOrDefaultAsync(c => c.Id == id);
                 if (user == null)
                 {
-                    throw new Exception("User does not exist");
+                    throw new Exception(ResponseMessages.USER_DOES_NOT_EXIST);
                 }
                 res.Data = new GetUserDto
                 {
