@@ -2,6 +2,8 @@ using Microsoft.EntityFrameworkCore;
 using Training.Services.UserService;
 using Training.Data;
 using Training;
+using Training.Models;
+using Microsoft.AspNetCore.Identity;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -12,6 +14,8 @@ builder.Services.AddAutoMapper(x =>
 {
     x.AddProfile<AutoMapperProfile>();
 });
+builder.Services.AddIdentity<User, IdentityRole<int>>()
+    .AddEntityFrameworkStores<DataContext>();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();

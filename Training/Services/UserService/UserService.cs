@@ -74,7 +74,7 @@ namespace Training.Services.UserService
                 user.FirstName = updatedUser.FirstName;
                 user.LastName = updatedUser.LastName;
                 user.Age = updatedUser.Age;
-                user.phoneNumber = updatedUser.phoneNumber;
+                user.PhoneNumber = updatedUser.PhoneNumber;
                 _context.Users.Update(user);
                 await _context.SaveChangesAsync();
                 res.Data = _mapper.Map<GetUserDto>(user);
