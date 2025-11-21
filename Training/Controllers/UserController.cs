@@ -1,10 +1,12 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Training.Dtos.User;
 using Training.Models;
 using Training.Services.UserService;
 
 namespace Training.Controllers
 {
+    [Authorize]
     [ApiController]
     [Route("[controller]")]
     public class UserController: BaseController
@@ -15,10 +17,23 @@ namespace Training.Controllers
             _userService = userService;
         }
 
-        [HttpPost]
-        public async Task<IActionResult> AddUser(AddUserDto user) {
-            ServiceResponse res = await _userService.AddUser(user);
+        [AllowAnonymous]
+        [HttpPost("Register")]
+        public async Task<IActionResult> RegisterUser(RegisterUserDto user) {
+            ServiceResponse res = await _userService.RegisterUser(user);
             if (!res.Success) 
+            {
+                return BadRequest(res);
+            }
+            return Ok(res);
+        }
+
+        [AllowAnonymous]
+        [HttpPost("Login")]
+        public async Task<IActionResult> LoginUser(LoginUserDto login)
+        {
+            ServiceResponse res = await _userService.LoginUser(login);
+            if (!res.Success)
             {
                 return BadRequest(res);
             }

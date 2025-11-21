@@ -9,7 +9,7 @@ namespace Training
         public AutoMapperProfile()
         {
             CreateMap<User, GetUserDto>();
-            CreateMap<AddUserDto, User>();
+            CreateMap<RegisterUserDto, User>();
         }
     }
 }
