@@ -10,23 +10,24 @@ using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
+using Training.Repositories.GenericRepository;
+using Training.Repositories.IdentityRepository;
 
 namespace Training.Services.UserService
 {
     public class UserService : IUserService
     {
         private readonly IMapper _mapper;
-        private readonly DataContext _context;
         private readonly IConfiguration _configuration;
-        private readonly UserManager<User> _userManager;
-        private readonly SignInManager<User> _signInManager;
-        public UserService(IMapper mapper, DataContext context, UserManager<User> userManager, SignInManager<User> signInManager, IConfiguration configuration)
+        private readonly IIdentityRepository _identityRepository;
+        private readonly IGenericRepository<User> _genericRepository;
+        public UserService(IMapper mapper, IConfiguration configuration, IGenericRepository<User> genericRepository, 
+            IIdentityRepository identityRepository)
         {
             _mapper = mapper;
-            _context = context;
-            _userManager = userManager;
-            _signInManager = signInManager;
             _configuration = configuration;
+            _genericRepository = genericRepository;
+            _identityRepository = identityRepository;
         }
 
         public async Task<ServiceResponse> RegisterUser(RegisterUserDto user)
@@ -36,7 +37,7 @@ namespace Training.Services.UserService
             {
                 User newUser = _mapper.Map<User>(user);
 
-                IdentityResult result = await _userManager.CreateAsync(newUser, user.Password);
+                IdentityResult result = await _identityRepository.CreateAsync(newUser, user.Password);
 
                 if (!result.Succeeded) {
                     throw new Exception(string.Join(", ", result.Errors.Select(e => e.Description)));
@@ -57,19 +58,18 @@ namespace Training.Services.UserService
             ServiceResponse res = new();
             try
             {
-                User? user = await _userManager.FindByEmailAsync(login.Email);
+                User? user = await _identityRepository.FindByEmailAsync(login.Email);
 
                 if (user == null)
                 {
                     throw new Exception(ResponseMessages.USER_DOES_NOT_EXIST);
                 }
 
-                SignInResult result = await _signInManager.CheckPasswordSignInAsync(user, login.Password, false);
+                SignInResult result = await _identityRepository.CheckPasswordAsync(user, login.Password, false);
 
                 if (!result.Succeeded)
                 {
                     throw new Exception(ResponseMessages.INVALID_CREDENTIALS);
-     
                 }
 
                 res.Data = CreateToken(user);
@@ -88,14 +88,14 @@ namespace Training.Services.UserService
             ServiceResponse res = new();
             try
             {
-                User? user = await _context.Users.FirstOrDefaultAsync(c => c.Id == id);
+                User? user = await _genericRepository.FirstOrDefaultAsync(c => c.Id == id);
 
                 if (user == null)
                 {
                     throw new Exception(ResponseMessages.USER_DOES_NOT_EXIST);
                 }
 
-                IdentityResult result = await _userManager.DeleteAsync(user);
+                IdentityResult result = await _identityRepository.DeleteAsync(user);
 
                 if (!result.Succeeded)
                 {
@@ -117,7 +117,7 @@ namespace Training.Services.UserService
             ServiceResponse res = new();
             try
             {
-                User? user = await _context.Users.FirstOrDefaultAsync(c => c.Id == updatedUser.Id);
+                User? user = await _genericRepository.FirstOrDefaultAsync(c => c.Id == updatedUser.Id);
                 if (user == null)
                 {
                     throw new Exception(ResponseMessages.USER_DOES_NOT_EXIST);
@@ -126,8 +126,8 @@ namespace Training.Services.UserService
                 user.LastName = updatedUser.LastName;
                 user.Age = updatedUser.Age;
                 user.PhoneNumber = updatedUser.PhoneNumber;
-                _context.Users.Update(user);
-                await _context.SaveChangesAsync();
+                _genericRepository.Update(user);
+                await _genericRepository.SaveChangesAsync();
                 res.Data = _mapper.Map<GetUserDto>(user);
             }
             catch (Exception ex)
@@ -143,7 +143,7 @@ namespace Training.Services.UserService
             ServiceResponse res = new();
             try
             {
-                User? user = await _context.Users.FirstOrDefaultAsync(c => c.Id == id);
+                User? user = await _genericRepository.FirstOrDefaultAsync(c => c.Id == id);
                 if (user == null)
                 {
                     throw new Exception(ResponseMessages.USER_DOES_NOT_EXIST);
