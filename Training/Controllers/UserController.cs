@@ -112,7 +112,7 @@ namespace Training.Controllers
         [HttpGet("SetPasswordPage")]
         public IActionResult SetPasswordPage([FromQuery] string userId, [FromQuery] string token)
         {
-            string actionUrl = "/user/setpassword";
+            string actionUrl = "/api/v1/user/setpassword";
             string html = HtmlTemplates.GetSetPasswordPage(userId, token, actionUrl);
             return Content(html, "text/html");
         }

@@ -11,7 +11,7 @@ using Training.Repositories.GenericRepository;
 using Training.Repositories.IdentityRepository;
 
 var builder = WebApplication.CreateBuilder(args);
-string? secretKey = builder.Configuration.GetSection("AppSettings:Token").Value;
+string? secretKey = builder.Configuration.GetSection("AppSettings:SecretKey").Value;
 string? connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 
 // Add services to the container.
