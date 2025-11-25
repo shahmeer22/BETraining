@@ -10,6 +10,7 @@ namespace Training
         {
             CreateMap<User, GetUserDto>();
             CreateMap<RegisterUserDto, User>();
+            CreateMap<AddUserDto, User>();
         }
     }
 }

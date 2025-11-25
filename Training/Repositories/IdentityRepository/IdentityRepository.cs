@@ -29,5 +29,24 @@ namespace Training.Repositories.IdentityRepository
         {
             return await _userManager.DeleteAsync(user);
         }
+        public async Task<string> GeneratePasswordResetToken(User newUser) { 
+            return await _userManager.GeneratePasswordResetTokenAsync(newUser);
+        }
+        public async Task<IdentityResult> CreateUserWithoutPassword(User user)
+        {
+            return await _userManager.CreateAsync(user);
+        }
+        public async Task<User> FindByIdAsync(string userId)
+        {
+            return await _userManager.FindByIdAsync(userId);
+        }
+        public async Task<IdentityResult> ResetPasswordAsync(User user, string token, string newPassword)
+        {
+            return await _userManager.ResetPasswordAsync(user, token, newPassword);
+        }
+        public async Task<IdentityResult> UpdateAsync(User user) 
+        {
+            return await _userManager.UpdateAsync(user);
+        }
     }
 }

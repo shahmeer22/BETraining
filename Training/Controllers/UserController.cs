@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Training.Dtos.User;
+using Training.Helper;
 using Training.Models;
 using Training.Services.UserService;
 
@@ -73,7 +74,7 @@ namespace Training.Controllers
             return Ok(res);
         }
 
-        [HttpGet("GetAllUsers")]
+        [HttpGet("GetAll")]
         public async Task<IActionResult> GetUsers([FromQuery] PaginationQueryParams param)
         {
             ServiceResponse res = await _userService.GetUsers(param);
@@ -82,6 +83,36 @@ namespace Training.Controllers
                 return BadRequest(res);
             }
             return Ok(res);
+        }
+
+        [HttpPost("Create")]
+        public async Task<IActionResult> CreateUser(AddUserDto newUser)
+        {
+            ServiceResponse res = await _userService.CreateUser(newUser);
+            if (!res.Success)
+            {
+                return BadRequest(res);
+            }
+            return Ok(res);
+        }
+
+        [AllowAnonymous]
+        [HttpPost("SetPassword")]
+        public async Task<IActionResult> SetPassword([FromForm] string userId,
+                                                     [FromForm] string token,
+                                                     [FromForm] string newPassword,
+                                                     [FromForm] string confirmPassword)
+        {
+            ServiceResponse res = await _userService.SetPassword(userId, token, newPassword, confirmPassword);
+            return Content(res.Message);
+        }
+
+        [AllowAnonymous]
+        [HttpGet("SetPasswordPage")]
+        public IActionResult SetPasswordPage([FromQuery] string userId, [FromQuery] string token)
+        {
+            string html = HtmlTemplates.GetSetPasswordPage(userId, token, "/user/setpassword");
+            return Content(html, "text/html");
         }
     }
 }

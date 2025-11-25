@@ -11,5 +11,10 @@ namespace Training.Services.UserService
         Task<ServiceResponse> UpdateUser(UpdateUserDto updatedUser);
         Task<ServiceResponse> GetUserById(int id);
         Task<ServiceResponse> GetUsers(PaginationQueryParams param);
+        Task<ServiceResponse> CreateUser(AddUserDto user);
+        Task<ServiceResponse> SetPassword(string userId,
+                                          string token,
+                                          string newPassword,
+                                          string confirmPassword);
     }
 }
