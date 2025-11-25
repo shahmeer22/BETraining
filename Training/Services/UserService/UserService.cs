@@ -39,7 +39,7 @@ namespace Training.Services.UserService
             {
                 User newUser = _mapper.Map<User>(user);
                 newUser.EmailConfirmed = true;
-                IdentityResult result = await _identityRepository.CreateAsync(newUser, user.Password);
+                IdentityResult result = await _identityRepository.CreateUser(newUser, user.Password);
 
                 if (!result.Succeeded) {
                     throw new Exception(string.Join(", ", result.Errors.Select(e => e.Description)));
@@ -133,13 +133,23 @@ namespace Training.Services.UserService
             {
                 if (newPassword != confirmPassword)
                 {
-                    throw new Exception("passwords do not match");
+                    throw new Exception(ExceptionMessages.PASSWORD_MISMATCH);
                 }
 
                 User user = await _identityRepository.FindByIdAsync(userId);
+
                 if (user == null)
                 {
-                    throw new Exception("user not found");
+                    throw new Exception(ExceptionMessages.USER_DOES_NOT_EXIST);
+                }
+
+                user.EmailConfirmed = true;
+                
+                IdentityResult updateResult = await _identityRepository.UpdateAsync(user);
+
+                if (!updateResult.Succeeded)
+                {
+                    throw new Exception(string.Join(", ", updateResult.Errors.Select(e => e.Description)));
                 }
 
                 IdentityResult result = await _identityRepository.ResetPasswordAsync(user, token, newPassword);
@@ -148,10 +158,6 @@ namespace Training.Services.UserService
                 {
                     throw new Exception(string.Join(", ", result.Errors.Select(e => e.Description)));
                 }
-
-                user.EmailConfirmed = true;
-                
-                IdentityResult updateRes = await _identityRepository.UpdateAsync(user);
 
                 res.Message = ResponseMessages.USER_CREATED_SUCCESSFULLY;
             }
@@ -300,14 +306,14 @@ namespace Training.Services.UserService
             bool ssl = bool.Parse(_configuration["SMTPSettings:EnableSSL"]);
 
             MailMessage message = new();
-            message.From = new System.Net.Mail.MailAddress(sender);
-            message.To.Add(new System.Net.Mail.MailAddress(newUser.Email));
+            message.From = new MailAddress(sender);
+            message.To.Add(new MailAddress(newUser.Email));
             message.Subject = "Set your password";
             message.Body = HtmlTemplates.GetEmailBody(newUser.FirstName, link);
 
             message.IsBodyHtml = true;
 
-            using SmtpClient smtp = new System.Net.Mail.SmtpClient(client)
+            using SmtpClient smtp = new SmtpClient(client)
             {
                 Port = port,
                 Credentials = new System.Net.NetworkCredential(sender, password),

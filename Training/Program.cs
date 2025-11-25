@@ -11,9 +11,11 @@ using Training.Repositories.GenericRepository;
 using Training.Repositories.IdentityRepository;
 
 var builder = WebApplication.CreateBuilder(args);
+string? secretKey = builder.Configuration.GetSection("AppSettings:Token").Value;
+string? connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 
 // Add services to the container.
-builder.Services.AddDbContext<DataContext>(x => x.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+builder.Services.AddDbContext<DataContext>(x => x.UseSqlServer(connectionString));
 builder.Services.AddControllers();
 builder.Services.AddAutoMapper(x =>
 {
@@ -36,8 +38,7 @@ builder.Services.AddAuthentication(options => {
     options.TokenValidationParameters = new TokenValidationParameters
     {
         ValidateIssuerSigningKey = true,
-        IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII
-        .GetBytes(builder.Configuration.GetSection("AppSettings:Token").Value)),
+        IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(secretKey)),
         ValidateIssuer = false,
         ValidateAudience = false
     };

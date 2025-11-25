@@ -13,7 +13,7 @@ namespace Training.Repositories.IdentityRepository
             _userManager = userManager;
             _signInManager = signInManager;
         }
-        public async Task<IdentityResult> CreateAsync(User user, string password)
+        public async Task<IdentityResult> CreateUser(User user, string password)
         {
             return await _userManager.CreateAsync(user, password);
         }

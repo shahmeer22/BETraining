@@ -20,7 +20,8 @@ namespace Training.Controllers
 
         [AllowAnonymous]
         [HttpPost("Register")]
-        public async Task<IActionResult> RegisterUser(RegisterUserDto user) {
+        public async Task<IActionResult> RegisterUser(RegisterUserDto user) 
+        {
             ServiceResponse res = await _userService.RegisterUser(user);
             if (!res.Success) 
             {
@@ -111,7 +112,8 @@ namespace Training.Controllers
         [HttpGet("SetPasswordPage")]
         public IActionResult SetPasswordPage([FromQuery] string userId, [FromQuery] string token)
         {
-            string html = HtmlTemplates.GetSetPasswordPage(userId, token, "/user/setpassword");
+            string actionUrl = "/user/setpassword";
+            string html = HtmlTemplates.GetSetPasswordPage(userId, token, actionUrl);
             return Content(html, "text/html");
         }
     }

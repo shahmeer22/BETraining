@@ -3,6 +3,7 @@ using System.Linq.Expressions;
 using Training.Data;
 using System.Linq.Dynamic.Core;
 using Training.Models;
+using Training.Constants;
 
 namespace Training.Repositories.GenericRepository
 {
@@ -85,11 +86,11 @@ namespace Training.Repositories.GenericRepository
                 return;
             }
 
-            if (page <= 0) throw new Exception("Page number must be greater than 0");
-            if (pageSize <= 0 || pageSize > 500) throw new Exception("Page size is incorrect");
+            if (page <= 0) throw new Exception(ExceptionMessages.PAGE_GREATER_THAN_ZERO);
+            if (pageSize <= 0 || pageSize > 500) throw new Exception(ExceptionMessages.INCORRECT_PAGE_SIZE);
 
             start = (page - 1) * pageSize;
-            if (start >= totalItems) throw new Exception("Page does not exist");
+            if (start >= totalItems) throw new Exception(ExceptionMessages.PAGE_DOES_NOT_EXIST);
 
             count = Math.Min(pageSize, totalItems - start);
         }
