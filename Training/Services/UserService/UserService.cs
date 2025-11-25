@@ -61,14 +61,14 @@ namespace Training.Services.UserService
 
                 if (user == null)
                 {
-                    throw new Exception(ResponseMessages.USER_DOES_NOT_EXIST);
+                    throw new Exception(ExceptionMessages.USER_DOES_NOT_EXIST);
                 }
 
                 SignInResult result = await _signInManager.CheckPasswordSignInAsync(user, login.Password, false);
 
                 if (!result.Succeeded)
                 {
-                    throw new Exception(ResponseMessages.INVALID_CREDENTIALS);
+                    throw new Exception(ExceptionMessages.INVALID_CREDENTIALS);
      
                 }
 
