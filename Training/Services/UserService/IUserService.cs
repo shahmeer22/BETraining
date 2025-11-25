@@ -10,5 +10,6 @@ namespace Training.Services.UserService
         Task<ServiceResponse> DeleteUser(int id);
         Task<ServiceResponse> UpdateUser(UpdateUserDto updatedUser);
         Task<ServiceResponse> GetUserById(int id);
+        Task<ServiceResponse> GetUsers(PaginationQueryParams param);
     }
 }

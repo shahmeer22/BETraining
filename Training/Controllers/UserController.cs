@@ -72,5 +72,16 @@ namespace Training.Controllers
             }
             return Ok(res);
         }
+
+        [HttpGet("GetAllUsers")]
+        public async Task<IActionResult> GetUsers([FromQuery] PaginationQueryParams param)
+        {
+            ServiceResponse res = await _userService.GetUsers(param);
+            if (!res.Success)
+            {
+                return BadRequest(res);
+            }
+            return Ok(res);
+        }
     }
 }

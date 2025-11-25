@@ -158,6 +158,33 @@ namespace Training.Services.UserService
             return res;
         }
 
+        public async Task<ServiceResponse> GetUsers(PaginationQueryParams param)
+        {
+            ServiceResponse res = new();
+            try
+            {
+                (IQueryable<User> query, int totalItems) = await _genericRepository.GetPaginatedResult(_genericRepository.Query(),
+                                                                                                        param);
+                List<User> users = await query.ToListAsync();
+
+                PaginatedResult<GetUserDto> paginatedResult = new()
+                {
+                    Items = users.Select(x => _mapper.Map<GetUserDto>(x)).ToList(),
+                    Page = param.Page,
+                    PageSize = param.PageSize,
+                    TotalCount = totalItems
+                };
+
+                res.Data = paginatedResult;
+            }
+            catch (Exception ex)
+            {
+                res.Success = false;
+                res.Message = ex.Message;
+            }
+            return res;
+        }
+
         private string CreateToken(User user)
         {
             List<Claim> claims = new List<Claim>
