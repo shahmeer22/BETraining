@@ -58,7 +58,7 @@ namespace Training.Services.UserService
                 User? user = await _context.Users.FirstOrDefaultAsync(c => c.Id == id);
                 if (user == null)
                 {
-                    throw new Exception(ResponseMessages.USER_DOES_NOT_EXIST);
+                    throw new Exception(ExceptionMessages.USER_DOES_NOT_EXIST);
                 }
                 _context.Users.Remove(user);
                 await _context.SaveChangesAsync();
@@ -80,7 +80,7 @@ namespace Training.Services.UserService
                 User? user = await _context.Users.FirstOrDefaultAsync(c => c.Id == updatedUser.Id);
                 if (user == null)
                 {
-                    throw new Exception(ResponseMessages.USER_DOES_NOT_EXIST);
+                    throw new Exception(ExceptionMessages.USER_DOES_NOT_EXIST);
                 }
                 user.FirstName = updatedUser.FirstName;
                 user.LastName = updatedUser.LastName;
@@ -113,7 +113,7 @@ namespace Training.Services.UserService
                 User? user = await _context.Users.FirstOrDefaultAsync(c => c.Id == id);
                 if (user == null)
                 {
-                    throw new Exception(ResponseMessages.USER_DOES_NOT_EXIST);
+                    throw new Exception(ExceptionMessages.USER_DOES_NOT_EXIST);
                 }
                 res.Data = new GetUserDto
                 {
