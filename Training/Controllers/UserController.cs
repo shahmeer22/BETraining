@@ -8,7 +8,7 @@ namespace Training.Controllers
 {
     [Authorize]
     [ApiController]
-    [Route("[controller]")]
+    [Route("api/v1/[controller]")]
     public class UserController: BaseController
     {
         private readonly IUserService _userService;
