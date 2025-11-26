@@ -4,6 +4,7 @@ using Training.Data;
 using System.Linq.Dynamic.Core;
 using Training.Models;
 using Training.Constants;
+using Microsoft.EntityFrameworkCore.Storage;
 
 namespace Training.Repositories.GenericRepository
 {
@@ -28,13 +29,20 @@ namespace Training.Repositories.GenericRepository
             return await _dbSet.FirstOrDefaultAsync(predicate);
         }
 
-        public T Update(T entity) {
+        public T Update(T entity) 
+        {
             _dbSet.Update(entity);
             return entity;
         }
 
-        public async Task<int> SaveChangesAsync() {
+        public async Task<int> SaveChangesAsync() 
+        {
             return await _context.SaveChangesAsync();
+        }
+
+        public async Task<IDbContextTransaction> StartTransaction() 
+        { 
+           return await _context.Database.BeginTransactionAsync();
         }
 
         public async Task<(IQueryable<T>, int)> GetPaginatedResult(IQueryable<T> query, PaginationQueryParams param)

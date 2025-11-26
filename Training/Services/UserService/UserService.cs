@@ -14,6 +14,7 @@ using Training.Repositories.GenericRepository;
 using Training.Repositories.IdentityRepository;
 using System.Net.Mail;
 using Training.Helper;
+using Microsoft.EntityFrameworkCore.Storage;
 
 namespace Training.Services.UserService
 {
@@ -129,6 +130,7 @@ namespace Training.Services.UserService
                                                        string confirmPassword) 
         {
             ServiceResponse res = new();
+            using IDbContextTransaction transaction = await _genericRepository.StartTransaction();
             try
             {
                 if (newPassword != confirmPassword)
@@ -159,10 +161,13 @@ namespace Training.Services.UserService
                     throw new Exception(string.Join(", ", result.Errors.Select(e => e.Description)));
                 }
 
+                await transaction.CommitAsync();
+
                 res.Message = ResponseMessages.USER_CREATED_SUCCESSFULLY;
             }
             catch (Exception ex)
             {
+                await transaction.RollbackAsync();
                 res.Success = false;
                 res.Message = ex.Message;
             }
@@ -298,7 +303,8 @@ namespace Training.Services.UserService
             return tokenHandler.WriteToken(token);
         }
 
-        private async Task SendEmail(User newUser, string link) {
+        private async Task SendEmail(User newUser, string link) 
+        {
             string sender = _configuration["SMTPSettings:Sender"];
             string client = _configuration["SMTPSettings:SMTPClient"];
             string password = _configuration["SMTPSettings:Password"];

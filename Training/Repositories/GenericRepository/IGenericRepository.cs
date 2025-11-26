@@ -1,4 +1,5 @@
-﻿using System.Linq.Expressions;
+﻿using Microsoft.EntityFrameworkCore.Storage;
+using System.Linq.Expressions;
 using Training.Models;
 
 namespace Training.Repositories.GenericRepository
@@ -10,5 +11,6 @@ namespace Training.Repositories.GenericRepository
         Task<int> SaveChangesAsync();
         IQueryable<T> Query();
         Task<(IQueryable<T>, int)> GetPaginatedResult(IQueryable<T> query, PaginationQueryParams param);
+        Task<IDbContextTransaction> StartTransaction();
     }
 }
