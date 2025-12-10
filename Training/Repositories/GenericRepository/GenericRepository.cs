@@ -48,9 +48,24 @@ namespace Training.Repositories.GenericRepository
         public async Task<(IQueryable<T>, int)> GetPaginatedResult(IQueryable<T> query, PaginationQueryParams param)
         {
             // Search
-            if (!string.IsNullOrEmpty(param.Search))
+            query = Search(query, param.Search);
+
+            // Sort
+            query = Sort(query, param.SortBy, param.Descending);
+
+            // Pagination
+            int totalItems = await query.CountAsync();
+            query = Pagination(query, totalItems, param.Page, param.PageSize);
+
+            return (query, totalItems);
+        }
+
+        public IQueryable<T> Search(IQueryable<T> query, string search)
+        {
+            // Search
+            if (!string.IsNullOrEmpty(search))
             {
-                string[] conditions = param.Search.Split("&&");
+                string[] conditions = search.Split("&&");
 
                 foreach (string condition in conditions)
                 {
@@ -72,17 +87,21 @@ namespace Training.Repositories.GenericRepository
                     }
                 }
             }
+            return query;
+        }
 
-            // Sort
-            string columnSort = param.Descending ? $"{param.SortBy} descending" : param.SortBy;
+        public IQueryable<T> Sort(IQueryable<T> query, string column, bool desc)
+        {
+            string columnSort = desc ? $"{column} descending" : column;
             query = query.OrderBy(columnSort);
+            return query;
+        }
 
-            // Pagination
-            int totalItems = await query.CountAsync();
-            GetStartAndCount(totalItems, param.Page, param.PageSize, out int start, out int count);
+        public IQueryable<T> Pagination(IQueryable<T> query, int totalItems, int page, int pageSize)
+        {
+            GetStartAndCount(totalItems, page, pageSize, out int start, out int count);
             query = query.Skip(start).Take(count);
-
-            return (query, totalItems);
+            return query;
         }
 
         public void GetStartAndCount(int totalItems, int page, int pageSize, out int start, out int count)

@@ -12,5 +12,8 @@ namespace Training.Repositories.GenericRepository
         IQueryable<T> Query();
         Task<(IQueryable<T>, int)> GetPaginatedResult(IQueryable<T> query, PaginationQueryParams param);
         Task<IDbContextTransaction> StartTransaction();
+        IQueryable<T> Search(IQueryable<T> query, string search);
+        IQueryable<T> Sort(IQueryable<T> query, string column, bool desc);
+        IQueryable<T> Pagination(IQueryable<T> query, int totalItems, int page, int pageSize);
     }
 }
